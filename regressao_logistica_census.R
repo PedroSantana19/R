@@ -29,14 +29,9 @@ divisao = sample.split(base$income, SplitRatio = 0.85)
 base_treinamento = subset(base, divisao == TRUE)
 base_teste = subset(base, divisao == FALSE)
 
-library(class)
-previsoes = knn(train = base_treinamento[, -15], test = base_teste[, -15],
-                cl = base_treinamento[, 15], k = 5)
-
+classificador = glm(formula = income~., family = binomial, data = base_treinamento)
+probabilidades = predict(classificador, type='response', newdata = base_teste)
+previsoes = ifelse(probabilidades > 0.5, 1, 0)
 matriz_confusao = table(base_teste[, 15], previsoes)
-print(matriz_confusao)
-# ZeroR - base line classifier (linha base)
-table(base_teste$income)
-
 library(caret)
 confusionMatrix(matriz_confusao)
